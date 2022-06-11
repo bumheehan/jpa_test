@@ -1,10 +1,6 @@
 spring:
-  config:
-    activate:
-      on-profile: testdb
   jpa:
     show-sql: false
-    # DB ??? ? ??? ??
     generate-ddl: true # DDL ??? ? ?? ??
     hibernate:
       ddl-auto: create   # DDL ???? ??
@@ -13,13 +9,9 @@ spring:
       hibernate:
         default_batch_fetch_size: 100
   datasource:
-    url: jdbc:h2://~/jpatest
+    url: jdbc:h2:tcp://localhost/~/testdb
     username: sa
-    password: password
-  h2:
-    console:
-      path: /h2
-      enabled: true
+    password:
 
 # Register P6LogFactory to log JDBC events
 decorator.datasource.p6spy.enable-logging: true
