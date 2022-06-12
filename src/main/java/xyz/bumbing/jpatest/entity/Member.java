@@ -21,9 +21,9 @@ public class Member {
     @JoinColumn(name = "teamId")
     private Team team;
 
-
-
-
+    public void setTeam(Team team) {
+        this.team = team;
+    }
 
     @Builder
     public Member(String name){

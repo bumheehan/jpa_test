@@ -6,10 +6,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.transaction.annotation.Transactional;
+import xyz.bumbing.jpatest.entity.Member;
 import xyz.bumbing.jpatest.entity.MemberRepository;
 import xyz.bumbing.jpatest.entity.Team;
 import xyz.bumbing.jpatest.entity.TeamRepository;
 
+import javax.persistence.EntityManager;
+import javax.swing.text.html.parser.Entity;
 import java.util.Optional;
 
 
@@ -22,6 +25,8 @@ class TransactionTests {
     @Autowired
     private MemberRepository memberRepository;
 
+    @Autowired
+    EntityManager entityManager;
     @Test
     void test1(){
         add("A");
@@ -131,7 +136,31 @@ class TransactionTests {
         teamRepository.save(teamA); //delete된 엔티티 다시 머지 안됨
     }
 
+
+    @Test
+    @Rollback(value = false)
+    @DisplayName("orphan removal test")
     @Transactional
+    void test10(){
+        Team teamA =  Team.builder().name("A").build();
+        Member member = Member.builder().name("Amember").build();
+        teamA.getMembers().add(member);
+        member.setTeam(teamA);
+        teamRepository.save(teamA);
+
+        entityManager.flush();
+        entityManager.clear();
+
+        Optional<Team> a = teamRepository.findByName("A");
+        a.ifPresent(s->{
+            s.getMembers().clear();
+            s.getMembers().add( Member.builder().name("Bmember").build());
+
+        });
+
+        //team 객체가 flush 전 후로 다른, Amember delete 쿼리 발생안함
+    }
+
     void add(String name) {
         Team team =  Team.builder().name(name).build();
         teamRepository.save(team);
