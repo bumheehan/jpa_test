@@ -6,31 +6,36 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Set;
 
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Member {
+public class Stadium {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     private String name;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "teamId")
-    private Team team;
+    @OneToMany(mappedBy = "stadium",cascade = {CascadeType.PERSIST,CascadeType.MERGE})
+    @OrderBy("id DESC")
+    private final Set<Team> teams = new LinkedHashSet<>();
 
     public void setTeam(Team team) {
-        this.team = team;
+        this.teams.add(team);
+        team.setStadium(this);
     }
 
     @Builder
-    public Member(String name){
+    public Stadium(String name){
         this.name = name;
     }
 
-    public void setName(String name) {
-        this.name = name;
-    }
+
+
+
 }

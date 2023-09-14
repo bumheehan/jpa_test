@@ -15,7 +15,7 @@ import java.util.List;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Team {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     private String name;
@@ -24,6 +24,11 @@ public class Team {
     @OrderBy
     private List<Member> members = new ArrayList<>();
 
+
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "stadium_id")
+    private Stadium stadium;
+
     @Builder
     public Team(String name){
         this.name=name;
@@ -31,5 +36,10 @@ public class Team {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+
+    public void setStadium(Stadium stadium) {
+        this.stadium = stadium;
     }
 }
